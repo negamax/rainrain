@@ -1,0 +1,14 @@
+{
+  "name": "RainRain",
+  "description": "Rain sounds for better sleep and concentration",
+  "version": "1",
+  "manifest_version": 2,
+  "app": {
+    "launch": {
+      "web_url": "http://www.rainrain.in"
+    }
+  },
+  "icons": {
+    "128": "icon_128.png"
+  }
+}

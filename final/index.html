@@ -1,0 +1,312 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+	<!--
+		Supersized - Fullscreen Slideshow jQuery Plugin
+		Version : 3.2.7
+		Site	: www.buildinternet.com/project/supersized
+		
+		Author	: Sam Dunn
+		Company : One Mighty Roar (www.onemightyroar.com)
+		License : MIT License / GPL License
+	-->
+
+	<head>
+	
+		<style media="screen" type="text/css">
+			body { overflow: hidden; }
+			#canvas { position: absolute; top: 0px; left: 0px; }
+		</style>
+		<script src="rainyday.0.1.1.js" type="text/javascript"></script>
+	
+
+		<title>Supersized - Full Screen Background Slideshow jQuery Plugin</title>
+		<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+		
+		<link rel="stylesheet" href="css/supersized.css" type="text/css" media="screen" />
+		<link rel="stylesheet" href="theme/supersized.shutter.css" type="text/css" media="screen" />
+		
+		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"></script>
+		<script type="text/javascript" src="js/jquery.easing.min.js"></script>
+		
+		<script type="text/javascript" src="js/supersized.3.2.7.min.js"></script>
+		<script type="text/javascript" src="theme/supersized.shutter.min.js"></script>
+
+		<script type="text/javascript">
+			var startIndex = new Number();
+			var sounds = new Array( "sounds/street2.mp3", "sounds/nature2.mp3", "sounds/ground2.mp3", "sounds/outside2.mp3" );
+			var backs = new Array( "images/street.jpg", "images/nature.jpg", "images/ground.jpg", "images/outside.jpg" );
+			
+			var blockSlide = false;
+			
+			$( function()
+			{
+				$( "#nextslide" ).click( function()
+				{				
+					if( blockSlide )
+					{
+						return;
+					}
+					
+					blockSlide = true;
+					startIndex++;
+					
+					if( startIndex == sounds.length )
+					{
+						startIndex = 0;
+					}
+					
+					playSound( new Number( startIndex ) );
+					setTimeout( unblockSlide, 500 );
+				});
+
+				$( "#prevslide" ).click( function()
+				{				
+					if( blockSlide )
+					{
+						return;
+					}
+					
+					blockSlide = true;
+					
+					startIndex--;
+					
+					if( startIndex < 0 )
+					{
+						startIndex = sounds.length - 1;
+					}
+					
+					playSound( new Number( startIndex ) );
+					
+					setTimeout( unblockSlide, 500 );
+				});	
+				
+				function unblockSlide()
+				{
+					blockSlide = false;
+				}
+			});			
+			
+			
+			var audioElements = new Array();
+			var futures = new Array();
+			
+			function removeAllSounds()
+			{
+				for( var count = 0; count < audioElements.length; count++ )
+				{
+					audioElements[ count ].pause();
+					audioElements[ count ].remove();
+				}			
+				
+				audioElements = new Array();				
+				
+				//cancel future sounds
+				for( var count = 0; count < futures.length; count++ )
+				{
+					clearTimeout( futures[ count ] );
+				}
+
+				futures = new Array();
+			}
+			
+			function resumeSound()
+			{
+				playSound( startIndex );
+			}
+			
+			function playSound(index)
+			{		
+				removeAllSounds();
+				
+				var audioElement = document.createElement('audio');
+				audioElement.setAttribute('src', sounds[ index ]);
+
+				audioElement.play();
+				
+				audioElements.push( audioElement );
+				
+				controlLoop( index );
+
+				$( "#background" ).attr( 'src', backs[ index ] ); 
+				
+				demo();
+			}
+			
+			function controlLoop( index )
+			{
+				var future = null;
+				
+				if( index == 0 )
+				{
+					future = setTimeout( playAgain, 48090, index );
+				}
+				else if( index == 1 )
+				{
+					future = setTimeout( playAgain, 37340, index );
+				}
+				else if( index == 2 )
+				{
+					future = setTimeout( playAgain, 46000, index );
+				}				
+				else if( index == 3 )
+				{
+					future = setTimeout( playAgain, 39540, index );
+				}
+				
+				if( future )
+				{
+					futures.push( future );
+				}
+			}
+			
+			function playAgain( index )
+			{
+				var audio2 = document.createElement('audio');
+				audio2.setAttribute('src', sounds[ index ]);
+				
+				audio2.play();
+
+				controlLoop( index );
+				
+				audioElements.push( audio2 );
+			}
+		
+			var runonlyonce = true;			
+			
+ 			function demo() {			
+			
+				$( "#cholder > canvas" ).each( function()
+				{
+					$( this ).remove();
+				});
+				
+				$( "#cholder" ).append( "<canvas id='canvas'></canvas>" );
+				
+				var engine = new RainyDay('canvas','background', window.innerWidth, window.innerHeight);
+
+				engine.gravity = engine.GRAVITY_NON_LINEAR;
+				engine.trail = engine.TRAIL_DROPS;
+
+				engine.rain([
+					engine.preset(0, 2, 500)
+				]);
+
+				engine.rain([
+					engine.preset(3, 3, 0.88),
+					engine.preset(5, 5, 0.9),
+					engine.preset(6, 2, 1),
+				], 100);				
+				
+				if( runonlyonce )
+				{				
+					supers();
+					//sound();
+					runonlyonce = false;
+				}
+ 			}
+		</script>		
+		
+		<script type="text/javascript">
+			
+			function supers(){
+				
+				$.supersized({
+				
+					// Functionalitys
+					slide_interval          :   900719925474099,		// Length between transitions
+					transition              :   3, 			// 0-None, 1-Fade, 2-Slide Top, 3-Slide Right, 4-Slide Bottom, 5-Slide Left, 6-Carousel Right, 7-Carousel Left
+					transition_speed		:	700,		// Speed of transition
+															   
+					// Components							
+					slide_links				:	false,	// Individual links for each slide (Options: false, 'num', 'name', 'blank')
+					slides 					:  	[			// Slideshow Images
+														{image : 'images/street.jpg', title : 'Street', thumb : 'images/thumbs/street.jpg', url : '#'},
+														{image : 'images/nature.jpg', title : 'Nature', thumb : 'images/thumbs/nature.jpg', url : '#'},
+														{image : 'images/ground.jpg', title : 'Ground', thumb : 'images/thumbs/ground.jpg', url : '#'},
+														{image : 'images/outside.jpg', title : 'Outside', thumb : 'images/thumbs/outside.jpg', url : '#'},
+												]
+					
+				});
+				
+				for( var count = 0; count < sounds.length; count++ )
+				{
+					$( ".thumb" + count ).click( {count:count}, function(event)
+					{
+						startIndex = event.data.count;
+						playSound( startIndex );						
+					});
+				}
+		    }		    
+		</script>
+		
+
+	</head>
+	
+	<style type="text/css">
+	#prevslide, #nextslide, #controls-wrapper, #tray-arrow, #tray-button, #slide-list, #thumb-tray
+	{
+		z-index:100;
+	}	
+	</style>
+
+<body onload="demo();">
+	<img id="background" src="images/street.jpg" />
+	<div id="cholder">		
+	</div>
+	
+	<!--End of styles-->
+
+	<!--Thumbnail Navigation-->
+	<div id="prevthumb"></div>
+	<div id="nextthumb"></div>
+	
+	<!--Arrow Navigation-->
+	<a id="prevslide" class="load-item"></a>
+	<a id="nextslide" class="load-item"></a>
+	
+	<div id="thumb-tray" class="load-item">
+		<div id="thumb-back"></div>
+		<div id="thumb-forward"></div>
+	</div>
+	
+	<!--Control Bar-->
+	<div id="controls-wrapper" class="load-item">
+		<div id="controls">
+		
+			<!--Slide counter-->
+			<div id="slidecounter">
+				<span class="slidenumber"></span> / <span class="totalslides"></span>
+			</div>
+			
+			<!--Slide captions displayed here-->
+			<div id="slidecaption"></div>			
+			
+			<!--Thumb Tray button-->
+			<a id="tray-button"><img id="tray-arrow" src="img/button-tray-up.png"/></a>
+			
+			<!--Navigation-->
+			<ul id="slide-list"></ul>
+			
+		</div>
+	</div>
+
+</body>
+
+<script>
+    function sound() {
+        var audioElement = document.createElement('audio');
+        audioElement.setAttribute('src', 'sounds/street.mp3');
+        audioElement.setAttribute('autoplay', 'autoplay');
+        //audioElement.load()
+
+        $.get();
+
+        audioElement.addEventListener("load", function() {
+            audioElement.play();
+        }, true);
+    }
+</script> 
+
+</html> 
